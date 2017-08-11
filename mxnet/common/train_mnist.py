@@ -53,9 +53,6 @@ if __name__ == '__main__':
                         help='the number of classes')
     parser.add_argument('--num-examples', type=int, default=60000,
                         help='the number of training examples')
-    
-    parser.add_argument('--add_stn',  action="store_true", default=False, help='Add Spatial Transformer Network Layer (lenet only)')
-    
     fit.add_fit_args(parser)
     parser.set_defaults(
         # network
@@ -66,7 +63,7 @@ if __name__ == '__main__':
         disp_batches   = 100,
         num_epochs     = 20,
         lr             = .05,
-        lr_step_epochs = '10'
+        lr_step_epochs = '10',
     )
     args = parser.parse_args()
 
@@ -75,17 +72,5 @@ if __name__ == '__main__':
     net = import_module('symbols.'+args.network)
     sym = net.get_symbol(**vars(args))
 
-    # tensorboard logs
-    train_log = 'logs/mnist/train'
-    eval_log = 'logs/mnist/eval'
-    try:
-        import tensorboard
-        batch_end_callbacks = [mx.contrib.tensorboard.LogMetricsCallback(train_log)]
-        eval_end_callbacks = [mx.contrib.tensorboard.LogMetricsCallback(eval_log)]
-    except:
-        print("warning: can't generate event files of tensorboard. You can install tensorboard using 'pip install tensorboard'.")
-
     # train
-    fit.fit(args, sym, get_mnist_iter,\
-            batch_end_callback = batch_end_callbacks,\
-            eval_end_callback = eval_end_callbacks)
+    fit.fit(args, sym, get_mnist_iter)
